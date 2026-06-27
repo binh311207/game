@@ -1,0 +1,1009 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Block Blast - Luxury Nature Edition</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body class="day-mode">
+    <!-- Weather Effects Canvas -->
+    <canvas id="weather-canvas"></canvas>
+
+    <!-- Custom Background Music Player -->
+    <audio id="bg-audio" loop></audio>
+
+    <!-- Top Navigation Controls -->
+    <div id="top-controls">
+      <button
+        class="control-btn"
+        id="music-btn"
+        onclick="toggleMusic()"
+        title="Bật/Tắt nhạc nền"
+      >
+        🔊
+      </button>
+      <button
+        class="control-btn"
+        id="settings-btn"
+        onclick="openModal('settings-modal')"
+        title="Cài đặt nhạc nền"
+      >
+        ⚙️
+      </button>
+      <button
+        class="control-btn"
+        id="sound-btn"
+        onclick="toggleSound()"
+        title="Bật/Tắt hiệu ứng âm thanh"
+      >
+        🎵
+      </button>
+      <button
+        class="control-btn"
+        id="cloud-btn"
+        onclick="syncCloud()"
+        title="Lưu trữ đám mây"
+      >
+        ☁️
+      </button>
+      <button
+        class="control-btn"
+        id="home-btn"
+        onclick="goHome()"
+        style="display: none"
+        title="Về sảnh chính"
+      >
+        🏠
+      </button>
+    </div>
+
+    <!-- Background Theme Control -->
+    <div id="theme-control">
+      <button id="theme-btn" onclick="changeBackground()">
+        🖼️ Đổi khung cảnh
+      </button>
+      <div id="theme-name">Cảnh 1: Ngọn núi và Hồ nước</div>
+    </div>
+
+    <!-- USER AUTHENTICATION SCREEN -->
+    <div
+      id="auth-screen"
+      class="glass-container view-screen active"
+      style="
+        position: fixed;
+        inset: 0;
+        margin: auto;
+        z-index: 4000;
+        width: 90%;
+        max-width: 400px;
+        height: fit-content;
+        max-height: 90vh;
+      "
+    >
+      <div class="logo-container">
+        <h1 class="logo-title">BLOCK BLAST</h1>
+        <div class="logo-subtitle">Bình có Pro Không?</div>
+        <div class="lobby-stars">★★★★★</div>
+      </div>
+      <!--Luxury Nature Edition-->
+      <div class="shop-tabs" style="width: 100%; margin-bottom: 20px">
+        <button
+          class="shop-tab active"
+          id="auth-tab-login"
+          onclick="switchAuthTab('login')"
+          style="flex-grow: 1"
+        >
+          Đăng nhập
+        </button>
+        <button
+          class="shop-tab"
+          id="auth-tab-register"
+          onclick="switchAuthTab('register')"
+          style="flex-grow: 1"
+        >
+          Đăng ký
+        </button>
+      </div>
+
+      <!-- Login Section -->
+      <div
+        id="auth-login-section"
+        style="
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          text-align: left;
+        "
+      >
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <label style="font-size: 11px; font-weight: 800; color: #cbd5e1"
+            >TÊN ĐĂNG NHẬP</label
+          >
+          <input
+            type="text"
+            id="login-username"
+            placeholder="Nhập tên đăng nhập..."
+            style="
+              font-size: 13px;
+              background: rgba(0, 0, 0, 0.3);
+              padding: 12px;
+              border-radius: 12px;
+              border: 1px solid rgba(255, 255, 255, 0.1);
+              color: #fff;
+              width: 100%;
+              font-family: inherit;
+            "
+          />
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <label style="font-size: 11px; font-weight: 800; color: #cbd5e1"
+            >MẬT KHẨU</label
+          >
+          <input
+            type="password"
+            id="login-password"
+            placeholder="Nhập mật khẩu..."
+            style="
+              font-size: 13px;
+              background: rgba(0, 0, 0, 0.3);
+              padding: 12px;
+              border-radius: 12px;
+              border: 1px solid rgba(255, 255, 255, 0.1);
+              color: #fff;
+              width: 100%;
+              font-family: inherit;
+            "
+          />
+        </div>
+        <div
+          id="login-error-msg"
+          style="
+            color: #ef4444;
+            font-size: 12px;
+            font-weight: 700;
+            text-align: center;
+            display: none;
+          "
+        >
+          Tên đăng nhập hoặc mật khẩu không đúng!
+        </div>
+        <button
+          class="action-btn"
+          onclick="submitLogin()"
+          style="width: 100%; margin-top: 10px"
+        >
+          ĐĂNG NHẬP
+        </button>
+      </div>
+
+      <!-- Register Section -->
+      <div
+        id="auth-register-section"
+        style="
+          width: 100%;
+          display: none;
+          flex-direction: column;
+          gap: 12px;
+          text-align: left;
+        "
+      >
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <label style="font-size: 11px; font-weight: 800; color: #cbd5e1"
+            >TÊN ĐĂNG NHẬP MỚI</label
+          >
+          <input
+            type="text"
+            id="register-username"
+            placeholder="Tên đăng nhập từ 3 ký tự..."
+            style="
+              font-size: 13px;
+              background: rgba(0, 0, 0, 0.3);
+              padding: 12px;
+              border-radius: 12px;
+              border: 1px solid rgba(255, 255, 255, 0.1);
+              color: #fff;
+              width: 100%;
+              font-family: inherit;
+            "
+          />
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <label style="font-size: 11px; font-weight: 800; color: #cbd5e1"
+            >MẬT KHẨU</label
+          >
+          <input
+            type="password"
+            id="register-password"
+            placeholder="Mật khẩu từ 4 ký tự..."
+            style="
+              font-size: 13px;
+              background: rgba(0, 0, 0, 0.3);
+              padding: 12px;
+              border-radius: 12px;
+              border: 1px solid rgba(255, 255, 255, 0.1);
+              color: #fff;
+              width: 100%;
+              font-family: inherit;
+            "
+          />
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <label style="font-size: 11px; font-weight: 800; color: #cbd5e1"
+            >XÁC NHẬN MẬT KHẨU</label
+          >
+          <input
+            type="password"
+            id="register-password-confirm"
+            placeholder="Nhập lại mật khẩu..."
+            style="
+              font-size: 13px;
+              background: rgba(0, 0, 0, 0.3);
+              padding: 12px;
+              border-radius: 12px;
+              border: 1px solid rgba(255, 255, 255, 0.1);
+              color: #fff;
+              width: 100%;
+              font-family: inherit;
+            "
+          />
+        </div>
+        <div
+          id="register-error-msg"
+          style="
+            color: #ef4444;
+            font-size: 12px;
+            font-weight: 700;
+            text-align: center;
+            display: none;
+          "
+        >
+          Có lỗi xảy ra!
+        </div>
+        <button
+          class="action-btn"
+          onclick="submitRegister()"
+          style="
+            width: 100%;
+            margin-top: 10px;
+            background: linear-gradient(135deg, #a855f7 0%, #d946ef 100%);
+            box-shadow: 0 6px 20px rgba(217, 70, 239, 0.3);
+          "
+        >
+          ĐĂNG KÝ NGAY
+        </button>
+      </div>
+
+      <div style="margin-top: 15px">
+        <span
+          onclick="continueAsGuest()"
+          style="
+            font-size: 11px;
+            color: #94a3b8;
+            cursor: pointer;
+            text-decoration: underline;
+          "
+          >Chơi nhanh chế độ Khách (Không lưu trữ)</span
+        >
+      </div>
+    </div>
+
+    <!-- MAIN LOBBY SCREEN -->
+    <div id="lobby-screen" class="glass-container view-screen">
+      <div class="logo-container">
+        <h1 class="logo-title">BLOCK BLAST</h1>
+        <div class="logo-subtitle">Luxury Nature Edition</div>
+        <div class="lobby-stars">★★★★★</div>
+      </div>
+
+      <!-- Currency Panel -->
+      <div class="lobby-currency-bar">
+        <div class="currency-item gold">
+          <span>👑</span> <span id="lobby-gold">0</span>
+        </div>
+        <div class="currency-item crystal">
+          <span>💠</span> <span id="lobby-crystal">0</span>
+        </div>
+        <div class="currency-item gems">
+          <span>💎</span> <span id="lobby-gems">20</span>
+        </div>
+      </div>
+
+      <!-- Profile & Level Panel -->
+      <div class="lobby-profile">
+        <img
+          src="avt.png"
+          alt="Avatar"
+          class="avatar-selector"
+          id="user-avatar"
+          onclick="changeAvatar()"
+        />
+        <div class="profile-info">
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+            "
+          >
+            <div class="profile-name" id="lobby-profile-name">
+              Nature Player
+            </div>
+            <span
+              onclick="logoutAccount()"
+              style="
+                font-size: 10px;
+                color: #ff0055;
+                font-weight: 800;
+                cursor: pointer;
+                text-decoration: underline;
+              "
+              >ĐĂNG XUẤT</span
+            >
+          </div>
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-top: 4px;
+            "
+          >
+            <span class="level-text" id="lobby-level">Cấp độ 1</span>
+            <span class="level-text" id="lobby-xp-label" style="font-size: 10px"
+              >0 / 100 XP</span
+            >
+          </div>
+          <div class="xp-bar-container">
+            <div class="xp-bar-fill" id="lobby-xp-fill" style="width: 0%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Play Mode Options -->
+      <div class="mode-list">
+        <button class="mode-btn" onclick="startGame('classic')">
+          <div class="mode-info">
+            <span style="font-size: 15px; font-weight: 800">Classic Mode</span>
+            <span class="mode-desc">Trò chơi cổ điển, vô tận</span>
+          </div>
+          <span class="mode-icon">🎮</span>
+        </button>
+
+        <button class="mode-btn" onclick="startGame('time-attack')">
+          <div class="mode-info">
+            <span style="font-size: 15px; font-weight: 800">Time Attack</span>
+            <span class="mode-desc">Xóa khối nhanh trước khi hết giờ</span>
+          </div>
+          <span class="mode-icon">⏱️</span>
+        </button>
+
+        <button class="mode-btn" onclick="startGame('zen')">
+          <div class="mode-info">
+            <span style="font-size: 15px; font-weight: 800">Zen Mode</span>
+            <span class="mode-desc">Thư giãn, bàn cờ tự dọn khi đầy</span>
+          </div>
+          <span class="mode-icon">🌸</span>
+        </button>
+
+        <button class="mode-btn" onclick="startGame('hardcore')">
+          <div class="mode-info">
+            <span style="font-size: 15px; font-weight: 800">Hardcore Mode</span>
+            <span class="mode-desc">Bàn cờ 9x9, mảnh cực khó, không búa</span>
+          </div>
+          <span class="mode-icon">🔥</span>
+        </button>
+      </div>
+
+      <!-- Bottom Navigation Grid -->
+      <div class="lobby-nav-grid">
+        <div class="nav-item" onclick="openModal('shop-modal')">
+          <span class="icon">🛒</span>
+          <span class="label">Cửa hàng</span>
+        </div>
+        <div class="nav-item" onclick="openModal('missions-modal')">
+          <span class="icon">📅</span>
+          <span class="label">Nhiệm vụ</span>
+        </div>
+        <div class="nav-item" onclick="openModal('spin-modal')">
+          <span class="icon">🎡</span>
+          <span class="label">Vòng quay</span>
+        </div>
+        <div class="nav-item" onclick="openModal('leaderboard-modal')">
+          <span class="icon">🏆</span>
+          <span class="label">Top</span>
+        </div>
+        <div class="nav-item" onclick="openModal('stats-modal')">
+          <span class="icon">📊</span>
+          <span class="label">T.Kê</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- GAME PLAY SCREEN -->
+    <div id="game-screen" class="glass-container view-screen">
+      <header>
+        <div class="logo-area">
+          <div class="game-title-inline" id="game-logo-text">BLOCK BLAST</div>
+          <div class="game-mode-tag" id="game-mode-tag">Classic</div>
+          <div id="streak-banner">STREAK COMBO x2 🔥</div>
+        </div>
+        <div class="stats-container">
+          <div class="stat-box">
+            <div class="stat-label">Score</div>
+            <div class="stat-value" id="score">0</div>
+          </div>
+          <div class="stat-box" id="best-box">
+            <div class="stat-label">Best</div>
+            <div class="stat-value" id="highscore">0</div>
+          </div>
+          <div class="stat-box" id="gem-box">
+            <div class="stat-label">Gems💎</div>
+            <div class="stat-value" id="gems">0</div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Timer Bar (Only visible in Time Attack) -->
+      <div id="timer-container">
+        <div id="timer-bar"></div>
+      </div>
+
+      <!-- Boss Level Health Overlay (When Boss spawns) -->
+      <div
+        id="boss-hud"
+        style="
+          display: none;
+          width: 100%;
+          align-items: center;
+          justify-content: space-between;
+          background: rgba(255, 0, 85, 0.15);
+          border: 1px solid #ff0055;
+          border-radius: 12px;
+          padding: 6px 12px;
+          margin-bottom: 12px;
+          font-weight: 800;
+          font-size: 11px;
+        "
+      >
+        <span style="color: #ff0055">👿 BOSS EVENT ACTIVE!</span>
+        <span
+          id="boss-hud-hp"
+          style="
+            color: #fff;
+            background: #ff0055;
+            padding: 2px 8px;
+            border-radius: 10px;
+          "
+          >HP: 5/5</span
+        >
+      </div>
+
+      <!-- In-Game Power-Ups Shop bar -->
+      <div id="shop-container">
+        <button class="shop-btn" id="hammer-btn" onclick="activateHammer()">
+          <span>🔨 Búa tạ</span>
+          <span class="cost">10💎</span>
+        </button>
+        <button class="shop-btn" id="bomb-btn" onclick="activateBomb()">
+          <span>💣 Bom phá</span>
+          <span class="cost">25💎</span>
+        </button>
+        <button class="shop-btn" id="undo-btn" onclick="performUndo()">
+          <span>↩️ Hoàn tác</span>
+          <span class="cost">20💎</span>
+        </button>
+        <button class="shop-btn" id="shuffle-btn" onclick="rerollRack()">
+          <span>🔄 Đổi mảnh</span>
+          <span class="cost">15💎</span>
+        </button>
+      </div>
+
+      <!-- Board game cờ -->
+      <div id="board">
+        <div id="perfect-notice">PERFECT!!</div>
+      </div>
+
+      <!-- Khay chứa mảnh -->
+      <div id="rack">
+        <div class="rack-slot" data-slot="0"></div>
+        <div class="rack-slot" data-slot="1"></div>
+        <div class="rack-slot" data-slot="2"></div>
+      </div>
+
+      <p id="instruction-text">
+        Chạm mảnh để xoay hình • Kéo thả mượt mà theo tâm ngón tay
+      </p>
+
+      <!-- Game over screen inside the container -->
+      <div id="game-over-screen">
+        <h1>GAME OVER</h1>
+        <p
+          id="game-over-reason"
+          style="color: #94a3b8; margin-bottom: 12px; font-weight: 500"
+        >
+          Con Gà Công Nghiệp!
+        </p>
+        <p
+          id="final-score-text"
+          style="
+            color: #ffcc00;
+            font-size: 18px;
+            font-weight: 800;
+            margin-bottom: 25px;
+          "
+        >
+          Điểm số đạt được: 0
+        </p>
+        <div style="display: flex; gap: 10px">
+          <button id="restart-btn" onclick="resetGame()">Chơi lại</button>
+          <button
+            class="action-btn"
+            onclick="goHome()"
+            style="
+              background: rgba(255, 255, 255, 0.15);
+              color: #fff;
+              box-shadow: none;
+            "
+          >
+            Trang chủ
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= MODALS OVERLAYS ================= -->
+
+    <!-- CUSTOM SETTINGS MODAL (Custom Music) -->
+    <div id="settings-modal" class="modal-overlay">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title">CÀI ĐẶT NHẠC NỀN</h2>
+          <button class="close-btn" onclick="closeModal('settings-modal')">
+            ×
+          </button>
+        </div>
+        <div
+          style="
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            text-align: left;
+          "
+        >
+          <p style="font-size: 12px; color: #cbd5e1">
+            Hãy chọn nhạc nền cá nhân của bạn để phát trong khi chơi game.
+          </p>
+
+          <div style="display: flex; flex-direction: column; gap: 6px">
+            <label style="font-size: 11px; font-weight: 800; color: #00ffcc"
+              >1. TẢI FILE MP3 TỪ MÁY</label
+            >
+            <input
+              type="file"
+              id="local-audio-input"
+              accept="audio/*"
+              style="
+                font-size: 12px;
+                background: rgba(255, 255, 255, 0.05);
+                padding: 8px;
+                border-radius: 10px;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                width: 100%;
+                color: #fff;
+                cursor: pointer;
+              "
+            />
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 6px">
+            <label style="font-size: 11px; font-weight: 800; color: #00ffcc"
+              >2. HOẶC DÁN ĐƯỜNG DẪN URL NHẠC (MP3 Link)</label
+            >
+            <div style="display: flex; gap: 6px">
+              <input
+                type="text"
+                id="audio-url-input"
+                placeholder="https://example.com/music.mp3"
+                style="
+                  flex-grow: 1;
+                  font-size: 12px;
+                  background: rgba(255, 255, 255, 0.05);
+                  padding: 8px;
+                  border-radius: 10px;
+                  border: 1px solid rgba(255, 255, 255, 0.1);
+                  color: #fff;
+                "
+              />
+              <button
+                class="action-btn"
+                onclick="loadMusicFromUrl()"
+                style="padding: 8px 12px; font-size: 12px"
+              >
+                Áp dụng
+              </button>
+            </div>
+          </div>
+
+          <div
+            id="music-status-text"
+            style="
+              font-size: 11px;
+              color: #94a3b8;
+              font-style: italic;
+              margin-top: 5px;
+              text-align: center;
+            "
+          >
+            Chưa chọn nhạc nền cá nhân.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PREMIUM SHOP MODAL -->
+    <div id="shop-modal" class="modal-overlay">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title">CỬA HÀNG</h2>
+          <button class="close-btn" onclick="closeModal('shop-modal')">
+            ×
+          </button>
+        </div>
+
+        <div class="shop-tabs">
+          <button
+            class="shop-tab active"
+            id="tab-btn-skins"
+            onclick="switchShopTab('skins')"
+          >
+            Skins Khối
+          </button>
+          <button
+            class="shop-tab"
+            id="tab-btn-powerups"
+            onclick="switchShopTab('powerups')"
+          >
+            Vật phẩm
+          </button>
+          <button
+            class="shop-tab"
+            id="tab-btn-exchange"
+            onclick="switchShopTab('exchange')"
+          >
+            Quy đổi VIP
+          </button>
+        </div>
+
+        <!-- Skins Tab -->
+        <div id="shop-skins-tab" class="shop-grid">
+          <!-- Populated dynamically via JS -->
+        </div>
+
+        <!-- Powerups Tab -->
+        <div id="shop-powerups-tab" class="shop-grid" style="display: none">
+          <!-- Populated dynamically via JS -->
+        </div>
+
+        <!-- Currency Exchange Tab -->
+        <div
+          id="shop-exchange-tab"
+          class="shop-grid"
+          style="display: none; grid-template-columns: 1fr"
+        >
+          <!-- Gold and VIP Currency buy details -->
+          <div class="shop-item-box">
+            <span>👑 Tiền tệ VIP</span>
+            <p style="font-size: 11px; color: #94a3b8">
+              Đổi Gems lấy Vương Miện Vàng 👑 để mua khối VIP
+            </p>
+            <button
+              class="action-btn"
+              onclick="exchangeCurrency('gems-to-gold')"
+              style="margin-top: 8px; width: 100%; font-size: 13px"
+            >
+              Đổi: 500 💎 ➔ 10 👑
+            </button>
+          </div>
+          <div class="shop-item-box">
+            <span>💠 Đá Pha Lê VIP</span>
+            <p style="font-size: 11px; color: #94a3b8">
+              Đổi Gems lấy Magic Crystal 💠 để mua khối Thần Thoại
+            </p>
+            <button
+              class="action-btn"
+              onclick="exchangeCurrency('gems-to-crystal')"
+              style="
+                margin-top: 8px;
+                width: 100%;
+                font-size: 13px;
+                background: linear-gradient(135deg, #00ffff, #0088cc);
+              "
+            >
+              Đổi: 1000 💎 ➔ 15 💠
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DAILY MISSIONS MODAL -->
+    <div id="missions-modal" class="modal-overlay">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title">NHIỆM VỤ HẰNG NGÀY</h2>
+          <button class="close-btn" onclick="closeModal('missions-modal')">
+            ×
+          </button>
+        </div>
+        <p
+          style="
+            font-size: 12px;
+            color: #94a3b8;
+            margin-bottom: 15px;
+            text-align: center;
+          "
+        >
+          Nhiệm vụ tự động đặt lại sau mỗi 24 giờ. Hoàn thành để nhận quà!
+        </p>
+        <div class="mission-list" id="mission-list-container">
+          <!-- Populated dynamically via JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- LUCKY SPIN MODAL -->
+    <div id="spin-modal" class="modal-overlay">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title">VÒNG QUAY MAY MẮN</h2>
+          <button class="close-btn" onclick="closeModal('spin-modal')">
+            ×
+          </button>
+        </div>
+        <div class="spin-container">
+          <p style="font-size: 12px; color: #cbd5e1; text-align: center">
+            Mỗi ngày được 1 lượt quay MIỄN PHÍ hoặc tiêu tốn 30💎.
+          </p>
+          <div class="wheel-outer">
+            <div class="wheel-arrow"></div>
+            <!-- Wheel represented via dynamic rotating SVG -->
+            <div
+              id="spin-wheel-canvas"
+              style="
+                width: 100%;
+                height: 100%;
+                transition: transform 4s cubic-bezier(0.15, 0.85, 0.25, 1);
+              "
+            >
+              <!-- Will draw via JS or SVG directly -->
+            </div>
+          </div>
+          <button
+            id="spin-start-btn"
+            class="action-btn"
+            onclick="triggerSpin()"
+          >
+            QUAY NGAY! (Miễn phí)
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- LEADERBOARD MODAL -->
+    <div id="leaderboard-modal" class="modal-overlay">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title">BẢNG XẾP HẠNG TOP</h2>
+          <span class="close-btn" onclick="closeModal('leaderboard-modal')">
+            ×
+          </span>
+        </div>
+        <div class="leaderboard-list" id="leaderboard-container">
+          <!-- Populated dynamically via JS -->
+        </div>
+      </div>
+    </div>
+                  <span
+                    class="close-btn"
+                    onclick="closeModal('leaderboard-modal')"
+                    >×</span
+                  >
+                </div>
+
+                <div class="leaderboard-list" id="leaderboard-container">
+                  <div class="lb-row header">
+                    <span>Hạng</span>
+                    <span>Người chơi</span>
+                    <span>Điểm</span>
+                  </div>
+                  <div id="leaderboard-body"></div>
+                </div>
+              </div>
+            </div>
+          </span>
+        </div>
+        <div class="leaderboard-list" id="leaderboard-container">
+          <!-- Populated dynamically via JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- STATISTICS MODAL -->
+    <div id="stats-modal" class="modal-overlay">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title">THỐNG KÊ CHI TIẾT</h2>
+          <button class="close-btn" onclick="closeModal('stats-modal')">
+            ×
+          </button>
+        </div>
+        <table class="stats-table">
+          <tr>
+            <td>Số trận đã chơi</td>
+            <td id="stats-games-played">0</td>
+          </tr>
+          <tr>
+            <td>Điểm cao nhất</td>
+            <td id="stats-highscore">0</td>
+          </tr>
+          <tr>
+            <td>Combo lớn nhất</td>
+            <td id="stats-max-combo">0</td>
+          </tr>
+          <tr>
+            <td>Số khối đã đặt</td>
+            <td id="stats-blocks-placed">0</td>
+          </tr>
+          <tr>
+            <td>Số hàng đã xóa</td>
+            <td id="stats-lines-cleared">0</td>
+          </tr>
+          <tr>
+            <td>Tổng số ngọc 💎 đã kiếm</td>
+            <td id="stats-gems-earned">0</td>
+          </tr>
+          <tr>
+            <td>Số búa đã gõ</td>
+            <td id="stats-hammers-used">0</td>
+          </tr>
+          <tr>
+            <td>Boss đã tiêu diệt</td>
+            <td id="stats-bosses-killed">0</td>
+          </tr>
+        </table>
+        <button
+          class="action-btn"
+          onclick="resetAllStats()"
+          style="
+            background: #ef4444;
+            color: #fff;
+            width: 100%;
+            margin-top: 20px;
+            font-size: 13px;
+            box-shadow: none;
+          "
+        >
+          Xóa trắng tất cả dữ liệu
+        </button>
+      </div>
+    </div>
+
+    <!-- LEVEL UP CONGRATULATIONS MODAL -->
+    <div id="levelup-modal" class="modal-overlay">
+      <div
+        class="modal-content"
+        style="
+          border-color: #ffcc00;
+          box-shadow: 0 0 30px rgba(255, 204, 0, 0.4);
+        "
+      >
+        <div class="levelup-container">
+          <div style="font-size: 50px">🎉</div>
+          <div class="levelup-banner">LÊN CẤP MỚI!</div>
+          <p id="levelup-details" style="font-size: 16px; font-weight: 700">
+            Bạn đã đạt Cấp độ 2
+          </p>
+          <div
+            style="
+              background: rgba(255, 255, 255, 0.05);
+              padding: 12px 20px;
+              border-radius: 16px;
+              width: 100%;
+              text-align: left;
+              margin: 10px 0;
+            "
+          >
+            <div
+              style="
+                font-weight: 800;
+                color: #00ffcc;
+                font-size: 12px;
+                margin-bottom: 6px;
+                text-transform: uppercase;
+              "
+            >
+              Phần thưởng thăng cấp:
+            </div>
+            <div style="font-size: 14px; font-weight: 700; color: #ff33cc">
+              💎 +20 Gems
+            </div>
+            <div
+              style="font-size: 14px; font-weight: 700; color: var(--vip-gold)"
+            >
+              👑 +2 Vương Miện Vàng
+            </div>
+          </div>
+          <button class="action-btn" onclick="closeModal('levelup-modal')">
+            Tuyệt vời!
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MYSTERIOUS GIFT BOX MODAL -->
+    <div id="gift-modal" class="modal-overlay">
+      <div class="modal-content" style="border-color: #ff33cc">
+        <div class="gift-container">
+          <h2
+            class="modal-title"
+            style="
+              background: linear-gradient(135deg, #ff33cc, #ff99ff);
+              -webkit-background-clip: text;
+              -webkit-text-fill-color: transparent;
+            "
+          >
+            🎁 HÒM QUÀ BÍ ẨN
+          </h2>
+          <p style="font-size: 13px; color: #cbd5e1">
+            Bạn đã hoàn thành thêm 5 ván đấu! Click vào hòm quà để nhận thưởng.
+          </p>
+          <div
+            class="gift-box-anim"
+            id="gift-box-element"
+            onclick="claimGiftBox()"
+          >
+            🎁
+          </div>
+          <div
+            id="gift-reward-reveal"
+            style="
+              display: none;
+              background: rgba(255, 255, 255, 0.05);
+              padding: 15px;
+              border-radius: 16px;
+              width: 100%;
+            "
+          >
+            <div
+              style="
+                font-weight: 800;
+                color: #ffcc00;
+                font-size: 14px;
+                margin-bottom: 8px;
+              "
+            >
+              BẠN ĐÃ NHẬN ĐƯỢC:
+            </div>
+            <div
+              id="gift-reward-text"
+              style="font-size: 18px; font-weight: 900; color: #00ffcc"
+            >
+              💎 50 Gems
+            </div>
+          </div>
+          <button
+            class="action-btn"
+            id="gift-close-btn"
+            onclick="closeModal('gift-modal')"
+            style="display: none"
+          >
+            Đóng
+          </button>
+        </div>
+      </div>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
