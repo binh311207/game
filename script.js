@@ -658,8 +658,19 @@ function loadState() {
     } else {
       gameState = DEFAULT_GAME_STATE();
     }
+    function loadState() {
+      if (currentUser) {
+        // ... (đoạn code xử lý currentAccount của bạn)
+
+        // THÊM DÒNG NÀY VÀO ĐÂY:
+        showWelcomeNotification();
+      } else {
+        // Guest
+        // ... (đoạn code xử lý guest của bạn)
+      }
+      syncLobbyUI();
+    }
   }
-  syncLobbyUI();
 }
 
 // --- ADMIN ACCOUNT (Hardcoded, không lưu vào localStorage) ---
@@ -2863,3 +2874,23 @@ document.querySelector(".lobby-nav-grid").addEventListener("click", () => {
     });
   }
 })();
+// Thêm thông báo chào mừng vào khi trang vừa tải xong
+window.addEventListener("DOMContentLoaded", (event) => {
+  console.log("Đang khởi chạy thông báo chào mừng...");
+
+  const banner = document.createElement("div");
+  banner.style.cssText = `
+        position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+        background:linear-gradient(135deg,#00d2ff,#3a7bd5);
+        color:#fff; padding:20px 35px; border-radius:20px;
+        font-size:18px; font-weight:900; z-index:999999;
+        box-shadow:0 0 40px rgba(0, 210, 255, 0.5); text-align:center;
+        animation: levelPopAnim 0.5s ease;
+    `;
+  banner.innerHTML =
+    "👋 CHÀO MỪNG BẠN ĐÃ ĐẾN VỚI BÌNH DZ! <br><span style='font-size:13px;font-weight:700;'>Chúc bạn chơi vui vẻ!</span>";
+  document.body.appendChild(banner);
+
+  // Xóa sau 3 giây
+  setTimeout(() => banner.remove(), 3000);
+});
